@@ -72,7 +72,7 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter{
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
             ctx.writeAndFlush(response);
-
+            ctx.fireChannelRead(sb);
         }
     }
 
@@ -80,5 +80,6 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter{
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         logger.info("HttpServerInboundHandler channelReadComplete");
         ctx.flush();
+        ctx.fireChannelReadComplete();
     }
 }

@@ -18,6 +18,7 @@ import java.net.URI;
  */
 public class HttpClient {
 
+
     public void connect(String host, int port) throws Exception {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -35,7 +36,7 @@ public class HttpClient {
             ChannelFuture f = b.connect(host, port).sync();
 
             URI uri = new URI("http://127.0.0.1:8000");
-            String msg = "Are u ok?";
+            String msg = "com.piccus.serper.Sample.StaticSample.invoke";
             DefaultFullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST,
                     uri.toASCIIString(), Unpooled.wrappedBuffer(msg.getBytes()));
 
@@ -46,6 +47,11 @@ public class HttpClient {
             request.headers().set("businessType", "testServerState");
 
             f.channel().writeAndFlush(request);
+            while (true) {
+                if (ResultMap.finish(msg))
+                    break;
+            }
+            System.out.println("Get Result : " + ResultMap.get(msg));
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

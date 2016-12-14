@@ -2,6 +2,7 @@ package com.piccus.serper.Sample;
 
 import com.piccus.serper.tools.Converter;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
@@ -17,11 +18,15 @@ public class HttpClientIntHandler extends ChannelInboundHandlerAdapter {
     //private ByteBufToBytes reader;
     private StringBuilder sb;
 
+    private StringBuilder rqsb;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpResponse) {
+            rqsb = new StringBuilder();
             HttpResponse response = (HttpResponse) msg;
             logger.info("CONTENT_TYPE : " + response.headers().get(HttpHeaderNames.CONTENT_TYPE));
+            rqsb.append(response.headers().get("requestName"));
             /*if (HttpHeaders.isContentLengthSet(response)) {
                     reader = new ByteBufToBytes((int) HttpHeaders.getContentLength(response));
             }*/
@@ -47,9 +52,8 @@ public class HttpClientIntHandler extends ChannelInboundHandlerAdapter {
 
                 ctx.close();
             }*/
-
             logger.info("Server said : " + sb.toString());
-            ctx.close();
+            ResultMap.add(rqsb.toString(), sb.toString());
         }
     }
 }

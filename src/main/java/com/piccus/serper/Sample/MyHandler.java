@@ -1,7 +1,10 @@
 package com.piccus.serper.Sample;
 
+import com.piccus.serper.core.SerperInvoker;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,7 +23,20 @@ public class MyHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         logger.info("MyHandler channelRead : " + msg);
-        super.channelRead(ctx, msg);
+        if (msg instanceof String) {
+            String source = (String) msg;
+            String resultStr = (String) SerperInvoker.invoke(source);
+            logger.info("Invoker return : " + resultStr);
+            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
+                    Unpooled.wrappedBuffer(resultStr.getBytes()));
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+            response.headers().set("requestName", source);
+            ctx.writeAndFlush(response);
+        }
+
+        //super.channelRead(ctx, msg);
     }
 
     @Override

@@ -65,14 +65,7 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter{
             }*/
 
             logger.info("Client said: " + sb.toString());
-
-            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-                    Unpooled.wrappedBuffer("I am ok".getBytes()));
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
-            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            ctx.writeAndFlush(response);
-            ctx.fireChannelRead(sb);
+            ctx.fireChannelRead(sb.toString());
         }
     }
 

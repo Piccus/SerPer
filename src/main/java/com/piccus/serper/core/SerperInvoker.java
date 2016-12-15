@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * Created by Piccus on 2016/12/12.
@@ -74,6 +75,15 @@ public class SerperInvoker {
 			logger.error(e.getMessage(), e);
         }
         return value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getProxyInstance(Class<T> interfaceClass) {
+        return (T) Proxy.newProxyInstance(
+                interfaceClass.getClassLoader(),
+                new Class<?>[]{interfaceClass},
+                new SerperProxy<T>(interfaceClass)
+        );
     }
 
 }

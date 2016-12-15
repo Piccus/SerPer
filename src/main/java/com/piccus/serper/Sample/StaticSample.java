@@ -29,7 +29,7 @@ public class StaticSample implements IStaticSample{
     }
 
     @Override
-    public String invoke() {
+    public String test() {
         return toString();
     }
 

@@ -32,7 +32,7 @@ public class MyHandler extends ChannelInboundHandlerAdapter {
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            response.headers().set("requestName", source);
+            response.headers().set("RequestId", "001");
             ctx.writeAndFlush(response);
         }
 

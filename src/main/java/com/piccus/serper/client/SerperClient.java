@@ -28,7 +28,7 @@ public class SerperClient {
     private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(16, 16, 600L,
             TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(65536));
 
-    private SerperClient(Sync sync) {
+    private SerperClient(Sync sync, String host, int port) {
         threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -37,7 +37,7 @@ public class SerperClient {
                     b.group(workerGroup).channel(NioSocketChannel.class)
                             .handler(new SerperClientInitializer());
 
-                    ChannelFuture f = b.connect("127.0.0.1", 8000).sync();
+                    ChannelFuture f = b.connect(host == null ? "127.0.0.1" : host, port == 0 ? 8000 : port).sync();
                     handler = f.channel().pipeline().get(SerperClientHandler.class);
                     if (sync != null)
                         sync.release(1);
@@ -45,7 +45,7 @@ public class SerperClient {
                         @Override
                         public void operationComplete(ChannelFuture channelFuture) throws Exception {
                             if (channelFuture.isSuccess())
-                                logger.debug("Successfully connect to server.");
+                                logger.debug("Successfully connect to server : " + f.channel().remoteAddress());
                         }
                     });
                 } catch (Exception e) {
@@ -56,21 +56,14 @@ public class SerperClient {
     }
 
     public static SerperClient getInstance() {
-        if (client == null) {
-            synchronized (SerperClient.class) {
-                if (client == null)
-                    client = new SerperClient(null);
-            }
-        }
-
-        return client;
+        return getInstance(null, null, 0);
     }
 
-    public static SerperClient getInstance(Sync sync) {
+    public static SerperClient getInstance(Sync sync, String host, int port) {
         if (client == null) {
             synchronized (SerperClient.class) {
                 if (client == null)
-                    client = new SerperClient(sync);
+                    client = new SerperClient(sync, host, port);
             }
         }
 

@@ -26,7 +26,7 @@ public class SerperServer {
     private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(16, 16, 600L,
             TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(65536));
 
-    private SerperServer() {
+    private SerperServer(int port) {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         try {
@@ -35,18 +35,22 @@ public class SerperServer {
                     .childHandler(new SerperServerInitializer())
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture f = b.bind(8000).sync().channel().closeFuture().sync();
-            logger.debug("Server start on port : 8000");
+            ChannelFuture f = b.bind(port == 0 ? 8000 : port).sync();
+            logger.debug("Server start on port : " + f.channel().localAddress());
         } catch (Exception e) {
             logger.error(e, e.getCause());
         }
     }
 
     public static SerperServer getInstance() {
+        return getInstance(0);
+    }
+
+    public static SerperServer getInstance(int port) {
         if (server == null) {
             synchronized (SerperServer.class) {
                 if (server == null)
-                    server = new SerperServer();
+                    server = new SerperServer(port);
             }
         }
         return server;

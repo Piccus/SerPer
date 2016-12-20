@@ -10,10 +10,14 @@ public class ConnectionManager {
     private SerperClient client;
     private Sync sync;
 
-    public ConnectionManager() {
+    public ConnectionManager(String host, int port) {
         sync = new Sync();
-        client = SerperClient.getInstance(sync);
+        client = SerperClient.getInstance(sync, host, port);
         sync.acquire(-1);
+    }
+
+    public ConnectionManager() {
+        this(null, 0);
     }
 
 }

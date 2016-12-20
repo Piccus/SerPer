@@ -1,5 +1,8 @@
 package com.piccus.serper.future;
 
+import com.piccus.serper.protocol.SerperRequest;
+import com.piccus.serper.protocol.SerperResponse;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -12,17 +15,17 @@ import java.util.jar.Pack200;
  */
 public class SerperFuture implements Future<Object> {
 
-    private String resultStr;
+    private SerperRequest request;
 
-    private String requestId;
+    private SerperResponse response;
 
     private Sync sync;
 
     private ReentrantLock lock = new ReentrantLock();
 
-    public SerperFuture(String requestId) {
+    public SerperFuture(SerperRequest request) {
+        this.request = request;
         sync = new Sync();
-        this.requestId = requestId;
     }
 
     @Override
@@ -43,8 +46,8 @@ public class SerperFuture implements Future<Object> {
     @Override
     public Object get() throws InterruptedException, ExecutionException {
         sync.acquire(-1);
-        if (resultStr != null)
-            return resultStr;
+        if (response != null)
+            return response.getResult();
         return null;
     }
 
@@ -52,21 +55,21 @@ public class SerperFuture implements Future<Object> {
     public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         boolean success = sync.tryAcquireNanos(-1, unit.toNanos(timeout));
         if (success) {
-            if (resultStr != null)
-                return resultStr;
+            if (response != null)
+                return response.getResult();
             else
                 return null;
         } else {
-            throw new RuntimeException("Timeout exception. Request ID : " + requestId);
+            throw new RuntimeException("Timeout exception. Request ID : " + request.getRequestId());
         }
     }
 
-    public void done(String resultStr) {
-        this.resultStr = resultStr;
+    public void done(SerperResponse response) {
+        this.response = response;
         sync.release(1);
     }
 
     public String getRequestId() {
-        return requestId;
+        return request.getRequestId();
     }
 }

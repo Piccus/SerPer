@@ -1,7 +1,5 @@
 package com.piccus.serper.launcher;
 
-import com.piccus.serper.net.Client;
-import com.piccus.serper.net.Server;
 
 /**
  * Created by Piccus on 2016/12/7.
@@ -26,7 +24,7 @@ public class Launcher {
             System.out.println("serper 1.00 version powered by Piccus");
             return;
         }
-        if (args[0].equals("--client")) {
+        /*if (args[0].equals("--client")) {
             System.out.println("serper client is starting -----");
             Client client = new Client();
             client.connect("10.32.3.39", 8000);
@@ -36,7 +34,7 @@ public class Launcher {
             System.out.println("serper server is starting -----");
             Server server = new Server();
             server.start(8000);
-        }
+        }*/
 
         System.out.println("The options is not valid,use '--help' to see the help information.");
         return;

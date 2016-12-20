@@ -1,6 +1,8 @@
 package com.piccus.serper.tools;
 
 import com.alibaba.fastjson.JSON;
+import com.piccus.serper.protocol.SerperRequest;
+import com.piccus.serper.protocol.SerperResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -24,5 +26,15 @@ public class Converter {
         byte[] bytes = str.getBytes();
         ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
         return byteBuf;
+    }
+
+    public static SerperResponse stringToResponse(String str) {
+        SerperResponse response = JSON.parseObject(str, SerperResponse.class);
+        return response;
+    }
+
+    public static SerperRequest stringToRequest(String str) {
+        SerperRequest request = JSON.parseObject(str, SerperRequest.class);
+        return request;
     }
 }

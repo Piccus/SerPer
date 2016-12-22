@@ -26,16 +26,10 @@ public class SerperProxy<T> implements InvocationHandler{
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        int pos = clazz.getName().lastIndexOf(".");
-        String className = clazz.getName().substring(pos + 2, clazz.getName().length());
-        String packagePath = clazz.getName().substring(0 ,pos);
-        //Class<?> cal = SerperInvoker.getClazz(packagePath + "." + className);
-        //T t = (T) SerperInvoker.getInstance(cal);
-        //Method mt = SerperInvoker.getMethod(cal, method.getName());
         logger.debug("Proxy started invoker.");
         SerperRequest request = new SerperRequest();
         request.setRequestId(UUID.randomUUID().toString());
-        request.setClassName(packagePath + "." + className);
+        request.setClassName(clazz.getName());
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setParameters(args);

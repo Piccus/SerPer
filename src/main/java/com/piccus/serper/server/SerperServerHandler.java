@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.*;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Created by Piccus on 2016/12/19.
@@ -22,6 +23,12 @@ public class SerperServerHandler extends SimpleChannelInboundHandler<SerperReque
 
     private Channel channel;
 
+    private final Map<String, Object> beanMap;
+
+    public SerperServerHandler(Map<String, Object> beanMap) {
+        this.beanMap = beanMap;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
@@ -31,21 +38,18 @@ public class SerperServerHandler extends SimpleChannelInboundHandler<SerperReque
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SerperRequest request) throws Exception {
         logger.debug("Server get a request.");
-        SerperServer.submit(new Runnable() {
-            @Override
-            public void run() {
-                logger.info("Starting thread for making response");
-                SerperResponse response = new SerperResponse();
-                response.setRequestId(request.getRequestId());
-                try {
-                    Object result = invoke(request);
-                    response.setResult(result);
-                } catch (Throwable t) {
-                    response.setError(t.toString());
-                    logger.error("Server comes a error during invoking : ", t);
-                }
-                sendResponse(response);
+        SerperServer.submit(() -> {
+            logger.info("Starting thread for making response");
+            SerperResponse response = new SerperResponse();
+            response.setRequestId(request.getRequestId());
+            try {
+                Object result = invoke(request);
+                response.setResult(result);
+            } catch (Throwable t) {
+                response.setError(t.toString());
+                logger.error("Server comes a error during invoking : ", t);
             }
+            sendResponse(response);
         });
     }
 
@@ -54,10 +58,10 @@ public class SerperServerHandler extends SimpleChannelInboundHandler<SerperReque
         String methodName = request.getMethodName();
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
-        Class<?> clazz = SerperInvoker.getClazz(className);
-        Object ins = SerperInvoker.getInstance(clazz);
+        Object bean = beanMap.get(className);
+        Class<?> clazz = bean.getClass();
         Method method = SerperInvoker.getMethod(clazz, methodName, parameterTypes);
-        return SerperInvoker.invokeMethod(method, ins, parameters);
+        return SerperInvoker.invokeMethod(method, bean, parameters);
     }
 
     private void sendResponse(SerperResponse response) {

@@ -7,6 +7,9 @@
     <groupId>com.piccus.framework</groupId>
     <artifactId>SerPer</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <spring.version>4.3.1.RELEASE</spring.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -29,6 +32,17 @@
             <version>1.2.21</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
     </dependencies>
 

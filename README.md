@@ -7,7 +7,7 @@ The rpc framework works throught HTTP protcol and doesn't support distributed fr
 + **Config**<br><br>You can use java config or xml.Remeber to add a **serper.properties** to tell the server the address binding to.
 There is the java config sample.
 
-		@Component
+		@Configuration
 		@ComponentScan(basePackages = "server")
 		@PropertySource("classpath:serper.properties")
     	public class ServerConfig {			

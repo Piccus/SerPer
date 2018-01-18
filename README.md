@@ -2,8 +2,8 @@
 A light rpc framework based on netty and spring framework.It works on JDK8.0 and higher.<br>
 The rpc framework works throught HTTP protcol and doesn't support distributed framework right now.The next time i'll update it.
 
-##Usage
-###Server
+## Usage
+### Server
 + **Config**<br><br>You can use java config or xml.Remeber to add a **serper.properties** to tell the server the address binding to.
 There is the java config sample.
 
@@ -33,7 +33,7 @@ and must be annotated with `@SerperService(interface)`
     		}
 		}
 
-###Client
+### Client
 + **Config**<br><br>The client config is as same as the server.Also,it need a **serper.properties**.
 
 + **Sample**<br><br>You can call the service like a local method.It's simple and fast.
